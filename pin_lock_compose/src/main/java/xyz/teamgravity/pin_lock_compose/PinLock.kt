@@ -21,7 +21,8 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.*
 
 /**
- * Covers the whole screen and displays PinLock.
+ * Covers the whole screen and displays the PinLock. This composable makes the user enter pin if it already exists. If there is
+ * no saved pin, it prompts the user to create pin.
  *
  * @param title
  * Container for title text. It passes the pinExists boolean, so you can decide what title to show. For pinExists value, it passes true
@@ -29,13 +30,11 @@ import androidx.constraintlayout.compose.*
  * @param color
  * Background color of container.
  * @param onPinCorrect
- * Gets called when pressed pin matches genuine pin.
+ * Gets called when entered pin matches genuine pin.
  * @param onPinIncorrect
- * Gets called when pressed pin does not match genuine.
+ * Gets called when entered pin does not match genuine.
  * @param onPinCreated
  * Gets called when pin gets saved.
- * @param onPinCreateError
- * Gets called when pin is not saved for some reason.
  */
 @Composable
 fun PinLock(
@@ -44,32 +43,132 @@ fun PinLock(
     onPinCorrect: () -> Unit,
     onPinIncorrect: () -> Unit,
     onPinCreated: () -> Unit,
-    onPinCreateError: () -> Unit,
 ) {
     var animate by remember { mutableStateOf(false) }
 
     val numbers = remember { mutableStateListOf<Int>() }
     val pinExists = remember { PinManager.pinExists() }
-    val numberHandler = remember {
-        { number: Int ->
+
+    BasePinLock(
+        title = {
+            title(pinExists)
+        },
+        color = color,
+        animate = animate,
+        numbers = numbers,
+        onNumberChange = { number ->
             if (numbers.size < PinConst.PIN_LENGTH) numbers.add(number)
 
             if (numbers.size == PinConst.PIN_LENGTH) {
                 if (PinManager.pinExists()) {
                     if (PinManager.checkPin(numbers)) {
                         onPinCorrect()
+                        numbers.clear()
                     } else {
                         animate = !animate
                         onPinIncorrect()
                         numbers.clear()
                     }
                 } else {
-                    if (PinManager.savePin(numbers)) onPinCreated() else onPinCreateError()
+                    PinManager.savePin(numbers)
+                    onPinCreated()
+                    numbers.clear()
                 }
             }
+        },
+        onBackspace = {
+            numbers.removeLastOrNull()
         }
-    }
+    )
+}
 
+/**
+ * Covers the whole screen and displays the PinLock. This composable first makes the user enter original pin. Once user successfully
+ * authenticates with his pin, it prompts the user to create new pin. It replaces the old pin. This composable is meant to be used for
+ * changing pin when there is already saved pin. Don't use this composable if there is no saved pin yet.
+ * Use [xyz.teamgravity.pin_lock_compose.PinLock] instead for creating pin for the first time.
+ *
+ * @param title
+ * Container for title text. It passes the authenticated boolean, so you can decide what title to show. For authenticated value, it passes
+ * true once user authenticates using his pin. It passes false if user is not authenticated yet.
+ * @param color
+ * Background color of container.
+ * @param onPinIncorrect
+ * Gets called when entered pin does not match genuine pin.
+ * @param onPinChanged
+ * Gets called when pin is changed successfully.
+ *
+ */
+@Composable
+fun ChangePinLock(
+    title: @Composable (authenticated: Boolean) -> Unit,
+    color: Color,
+    onPinIncorrect: () -> Unit,
+    onPinChanged: () -> Unit,
+) {
+    var authenticated by remember { mutableStateOf(false) }
+    var animate by remember { mutableStateOf(false) }
+
+    val numbers = remember { mutableStateListOf<Int>() }
+
+    BasePinLock(
+        title = {
+            title(authenticated)
+        },
+        color = color,
+        animate = animate,
+        numbers = numbers,
+        onNumberChange = { number ->
+            if (numbers.size < PinConst.PIN_LENGTH) numbers.add(number)
+
+            if (numbers.size == PinConst.PIN_LENGTH) {
+                if (authenticated) {
+                    PinManager.savePin(numbers)
+                    onPinChanged()
+                    numbers.clear()
+                } else {
+                    if (PinManager.checkPin(numbers)) {
+                        numbers.clear()
+                        authenticated = true
+                    } else {
+                        animate = !animate
+                        onPinIncorrect()
+                        numbers.clear()
+                    }
+                }
+            }
+        },
+        onBackspace = {
+            numbers.removeLastOrNull()
+        }
+    )
+}
+
+/**
+ * This is base pin lock composable. This is dumb composable that only displays PinLock.
+ *
+ * @param title
+ * Container for title text.
+ * @param color
+ * Background color of container.
+ * @param animate
+ * Whenever this value changes, incorrect pin pattern animation gets executed on pin indicator.
+ * @param numbers
+ * List of int that represents entered pin.
+ * @param onNumberChange
+ * Gets called whenever number buttons are clicked. It also passes what number is clicked.
+ * @param onBackspace
+ * Get called whenever backspace button is clicked.
+ */
+@Composable
+private fun BasePinLock(
+    title: @Composable () -> Unit,
+    color: Color,
+    animate: Boolean,
+    numbers: List<Int>,
+    onNumberChange: (number: Int) -> Unit,
+    onBackspace: () -> Unit,
+) {
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -84,7 +183,7 @@ fun PinLock(
                 linkTo(start = parent.start, end = parent.end)
             },
         ) {
-            title(pinExists)
+            title()
         }
         Spacer(
             modifier = Modifier.constrainAs(oneS) {
@@ -132,12 +231,12 @@ fun PinLock(
         )
         NumberButton(
             number = 1,
-            onClick = numberHandler,
+            onClick = onNumberChange,
             reference = oneB,
         )
         NumberButton(
             number = 2,
-            onClick = numberHandler,
+            onClick = onNumberChange,
             reference = twoB,
             constrain = {
                 linkTo(top = oneB.top, bottom = oneB.bottom)
@@ -145,7 +244,7 @@ fun PinLock(
         )
         NumberButton(
             number = 3,
-            onClick = numberHandler,
+            onClick = onNumberChange,
             reference = threeB,
             constrain = {
                 linkTo(top = oneB.top, bottom = oneB.bottom)
@@ -153,12 +252,12 @@ fun PinLock(
         )
         NumberButton(
             number = 4,
-            onClick = numberHandler,
+            onClick = onNumberChange,
             reference = fourB,
         )
         NumberButton(
             number = 5,
-            onClick = numberHandler,
+            onClick = onNumberChange,
             reference = fiveB,
             constrain = {
                 linkTo(top = fourB.top, bottom = fourB.bottom)
@@ -166,7 +265,7 @@ fun PinLock(
         )
         NumberButton(
             number = 6,
-            onClick = numberHandler,
+            onClick = onNumberChange,
             reference = sixB,
             constrain = {
                 linkTo(top = fourB.top, bottom = fourB.bottom)
@@ -174,12 +273,12 @@ fun PinLock(
         )
         NumberButton(
             number = 7,
-            onClick = numberHandler,
+            onClick = onNumberChange,
             reference = sevenB,
         )
         NumberButton(
             number = 8,
-            onClick = numberHandler,
+            onClick = onNumberChange,
             reference = eightB,
             constrain = {
                 linkTo(top = sevenB.top, bottom = sevenB.bottom)
@@ -187,7 +286,7 @@ fun PinLock(
         )
         NumberButton(
             number = 9,
-            onClick = numberHandler,
+            onClick = onNumberChange,
             reference = nineB,
             constrain = {
                 linkTo(top = sevenB.top, bottom = sevenB.bottom)
@@ -195,16 +294,14 @@ fun PinLock(
         )
         NumberButton(
             number = 0,
-            onClick = numberHandler,
+            onClick = onNumberChange,
             reference = zeroB,
             constrain = {
                 linkTo(start = eightB.start, end = eightB.end)
             }
         )
         IconButton(
-            onClick = {
-                numbers.removeLastOrNull()
-            },
+            onClick = onBackspace,
             modifier = Modifier.constrainAs(clearB) {
                 linkTo(start = nineB.start, end = nineB.end)
                 linkTo(top = zeroB.top, bottom = zeroB.bottom)
