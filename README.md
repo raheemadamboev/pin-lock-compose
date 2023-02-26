@@ -28,6 +28,13 @@ implementation 'com.github.raheemadamboev:pin-lock-compose:1.0'
 ```
 # Implementation
 
+Firstly, initialize the library on your `onCreate` of Application class:
+```kotlin
+PinManager.initialize(this)
+```
+
+---
+
 To add Pin Lock screen, add the `PinLock` composable to your compose area:
 ```kotlin
 PinLock(
