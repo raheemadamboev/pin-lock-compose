@@ -72,5 +72,5 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.5.1'
 
     // pin lock compose
-    implementation project(":pin_lock_compose")
+    implementation 'com.github.raheemadamboev:pin-lock-compose:1.0'
 }
