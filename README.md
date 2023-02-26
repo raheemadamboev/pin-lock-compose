@@ -95,9 +95,15 @@ You can install and try demo app. All the features are implemented in the demo f
 
 <a href="https://github.com/raheemadamboev/pin-lock-compose/blob/master/app-debug.apk">Download demo</a>
 
+<p align="center">
+  <img width="296" height="600" src="https://github.com/raheemadamboev/pin-lock-compose/blob/master/screenshot_1.jpg" />
+  <img width="296" height="600" src="https://github.com/raheemadamboev/pin-lock-compose/blob/master/screenshot_2.jpg" />
+  <img width="296" height="600" src="https://github.com/raheemadamboev/pin-lock-compose/blob/master/screenshot_3.jpg" />
+</p>
+
 # Projects using this library
 
-**Notepad** 40 000+ downloads in <a href="https://play.google.com/store/apps/details?id=xyz.teamgravity.notepad">Google Play Store</a>
+**Notepad** -> 40 000+ downloads in <a href="https://play.google.com/store/apps/details?id=xyz.teamgravity.notepad">Google Play Store</a>
 
 # Licence
 
