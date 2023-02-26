@@ -77,8 +77,6 @@ Use this only if there is already saved pin. If there is no saved pin, use simpl
   <img width="296" height="600" src="https://github.com/raheemadamboev/pin-lock-compose/blob/master/banner_3.gif" />
 </p>
 
-Library is also robust to configuration changes.
-
 # Features
 
 - pin lock screen very easily
