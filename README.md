@@ -71,3 +71,8 @@ ChangePinLock(
   }
 )
 ```
+Use this only if there is already saved pin. If there is no saved pin use, simple `PinLock` instead for creating pin for the first time. When using `ChangePinLock`, it first prompts the user to enter original pin. After user succesfully authenticates using his original pin, it prompts the user to creat a new pin:
+
+<p align="center">
+  <img width="296" height="600" src="https://github.com/raheemadamboev/pin-lock-compose/blob/master/banner_3.gif" />
+</p>
