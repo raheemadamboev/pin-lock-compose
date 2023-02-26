@@ -12,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,7 +38,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    var navigation by remember { mutableStateOf(Screen.Authenticate) }
+                    var navigation by rememberSaveable { mutableStateOf(Screen.Authenticate) }
 
                     when (navigation) {
                         Screen.Authenticate -> {

@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -46,7 +47,7 @@ fun PinLock(
 ) {
     var animate by remember { mutableStateOf(false) }
 
-    val numbers = remember { mutableStateListOf<Int>() }
+    val numbers = rememberMutableStateListOf<Int>()
     val pinExists = remember { PinManager.pinExists() }
 
     BasePinLock(
@@ -106,10 +107,10 @@ fun ChangePinLock(
     onPinIncorrect: () -> Unit,
     onPinChanged: () -> Unit,
 ) {
-    var authenticated by remember { mutableStateOf(false) }
+    var authenticated by rememberSaveable { mutableStateOf(false) }
     var animate by remember { mutableStateOf(false) }
 
-    val numbers = remember { mutableStateListOf<Int>() }
+    val numbers = rememberMutableStateListOf<Int>()
 
     BasePinLock(
         title = {
