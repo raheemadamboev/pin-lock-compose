@@ -8,7 +8,7 @@
 </p>
 
 <p align="center">
-📻 Light library that is beautiful Pin Lock screen for Jetpack Compose. The library handles saving pin in Encrypted file. Integration is very easy and fast.
+🔐 Light library that is beautiful Pin Lock screen for Jetpack Compose. The library handles saving pin in Encrypted file. Integration is very easy and fast.
 </p>
 
 # Setup
