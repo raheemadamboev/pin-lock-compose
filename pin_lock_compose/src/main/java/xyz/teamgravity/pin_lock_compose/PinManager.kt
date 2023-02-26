@@ -69,15 +69,11 @@ object PinManager {
     /**
      * Saves the pin in encrypted SharedPreferences.
      *
-     * @return true if pin lock saved successfully, false if pin is not saved.
-     *
      * @param pin
      * List of pin numbers.
      */
-    internal fun savePin(pin: List<Int>): Boolean {
-        if (pinExists()) return false
+    internal fun savePin(pin: List<Int>) {
         getPreferences().edit().putString(PIN_LOCK, fromIntList(pin)).apply()
-        return true
     }
 
     /**
