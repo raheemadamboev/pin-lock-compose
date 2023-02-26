@@ -1,6 +1,7 @@
 package xyz.teamgravity.pinlockcomposedemo
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
@@ -17,11 +18,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import xyz.teamgravity.pin_lock_compose.ChangePinLock
 import xyz.teamgravity.pin_lock_compose.PinLock
 import xyz.teamgravity.pinlockcomposedemo.ui.theme.PinLockComposeDemoTheme
-import xyz.teamgravity.pinlockcomposedemo.ui.theme.Purple40
 
 class MainActivity : ComponentActivity() {
+
+    companion object {
+        private const val TAG = "Tate"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,51 +37,92 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    var authenticated by remember { mutableStateOf(false) }
+                    var navigation by remember { mutableStateOf(Screen.Authenticate) }
 
-                    if (!authenticated) {
-                        PinLock(
-                            title = { pinExists ->
-                                Text(
-                                    text = if (pinExists) "Enter your pin" else " Create pin",
-                                    color = Color.White,
-                                    fontSize = 22.sp
-                                )
-                            },
-                            color = MaterialTheme.colorScheme.primary,
-                            onPinCorrect = { // pin is correct, navigate or hide pin lock
-                                authenticated = true
-                            },
-                            onPinIncorrect = {
-                                // pin is incorrect, show error
-                            },
-                            onPinCreated = {
-                                // pin created for the first time, navigate or hide pin lock
-                                authenticated = true
-                            },
-                            onPinCreateError = {
-                                // error occurred when creating pin, show error
-                            }
-                        )
-                    } else {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center,
-                            modifier = Modifier.fillMaxSize()
-                        ) {
-                            Text(text = "You entered pin correctly!")
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Button(
-                                onClick = {
-                                    authenticated = false
+                    when (navigation) {
+                        Screen.Authenticate -> {
+                            PinLock(
+                                title = { pinExists ->
+                                    Text(
+                                        text = if (pinExists) "Enter your pin" else "Create pin",
+                                        color = Color.White,
+                                        fontSize = 22.sp
+                                    )
+                                },
+                                color = MaterialTheme.colorScheme.primary,
+                                onPinCorrect = {
+                                    // pin is correct, navigate or hide pin lock
+                                    Log.d(TAG, "Pin is correct")
+                                    navigation = Screen.Main
+                                },
+                                onPinIncorrect = {
+                                    // pin is incorrect, show error
+                                    Log.d(TAG, "Pin is incorrect")
+                                },
+                                onPinCreated = {
+                                    // pin created for the first time, navigate or hide pin lock
+                                    Log.d(TAG, "Pin is created for the first time")
+                                    navigation = Screen.Main
+                                },
+                            )
+                        }
+
+                        Screen.ChangePin -> {
+                            ChangePinLock(
+                                title = { authenticated ->
+                                    Text(
+                                        text = if (authenticated) "Enter new pin" else "Enter your pin",
+                                        color = Color.White,
+                                        fontSize = 22.sp
+                                    )
+                                },
+                                color = MaterialTheme.colorScheme.primary,
+                                onPinIncorrect = {
+                                    // pin is incorrect, show error
+                                    Log.d(TAG, "Pin is incorrect")
+                                },
+                                onPinChanged = {
+                                    // pin changed, navigate or hide pin lock
+                                    Log.d(TAG, "Pin is changed")
+                                    navigation = Screen.Main
                                 }
+                            )
+                        }
+
+                        Screen.Main ->  {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center,
+                                modifier = Modifier.fillMaxSize()
                             ) {
-                                Text(text = "Show PinLock")
+                                Text(text = "You entered pin correctly!")
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Button(
+                                    onClick = {
+                                        navigation = Screen.Authenticate
+                                    }
+                                ) {
+                                    Text(text = "Authenticate")
+                                }
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Button(
+                                    onClick = {
+                                        navigation = Screen.ChangePin
+                                    }
+                                ) {
+                                    Text(text = "Change Pin")
+                                }
                             }
                         }
                     }
                 }
             }
         }
+    }
+
+    private enum class Screen {
+        Authenticate,
+        ChangePin,
+        Main
     }
 }
