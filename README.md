@@ -8,7 +8,7 @@
 </p>
 
 <p align="center">
-📻 Light library that is beautiful Pin Lock screen for Jetpack Compose. The library handles saving pin in Encrypted file. Integration is very easy.
+📻 Light library that is beautiful Pin Lock screen for Jetpack Compose. The library handles saving pin in Encrypted file. Integration is very easy and fast.
 </p>
 
 # Setup
@@ -28,7 +28,7 @@ implementation 'com.github.raheemadamboev:pin-lock-compose:1.0'
 ```
 # Implementation
 
-To add PinLock screen, add the PinLock composable to your compose area:
+To add Pin Lock screen, add the `PinLock` composable to your compose area:
 ```kotlin
 PinLock(
   title = { pinExists ->
@@ -53,3 +53,21 @@ If there is no saved pin yet, it promtps the user to create pin. If there is sav
   <img width="296" height="600" src="https://github.com/raheemadamboev/pin-lock-compose/blob/master/banner_1.gif" />
   <img width="296" height="600" src="https://github.com/raheemadamboev/pin-lock-compose/blob/master/banner_2.gif" />
 </p>
+
+---
+
+It is also possible to change pin. Just add `ChangePinLock` composable to your compose area:
+```kotlin
+ChangePinLock(
+  title = { authenticated ->
+    Text(text = if (authenticated) "Enter new pin" else "Enter your pin")
+  },
+  color = MaterialTheme.colorScheme.primary,
+  onPinCorrect = {
+    // pin is incorrect, show error
+  },
+  onPinChanged = {
+    // pin changed, navigate or hide pin lock
+  }
+)
+```
