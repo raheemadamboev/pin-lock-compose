@@ -63,7 +63,7 @@ class MainActivity : ComponentActivity() {
                                     // pin created for the first time, navigate or hide pin lock
                                     Log.d(TAG, "Pin is created for the first time")
                                     navigation = Screen.Main
-                                },
+                                }
                             )
                         }
 

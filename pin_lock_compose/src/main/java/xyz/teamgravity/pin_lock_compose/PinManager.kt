@@ -95,7 +95,7 @@ object PinManager {
     ///////////////////////////////////////////////////////////////////////////
 
     /**
-     * Initializes the pin lock. Prefer calling this bitch inside Application class.
+     * Initializes the pin lock. Prefer calling this function inside Application class.
      *
      * @param context
      * Need context to initialize.
