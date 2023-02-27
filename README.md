@@ -70,7 +70,7 @@ ChangePinLock(
     Text(text = if (authenticated) "Enter new pin" else "Enter your pin")
   },
   color = MaterialTheme.colorScheme.primary,
-  onPinCorrect = {
+  onPinIncorrect = {
     // pin is incorrect, show error
   },
   onPinChanged = {
