@@ -90,7 +90,7 @@ Use this only if there is already saved pin. If there is no saved pin, use simpl
 - handles encryption and saving pin internally
 - change pin lock screen
 - customizable background color
-- robust to configuration change
+- robust to configuration changes
 - backspace to remove last entered pin number
 - incorrect indicator animation
 
