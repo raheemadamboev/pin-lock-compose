@@ -113,4 +113,12 @@ object PinManager {
     fun pinExists(): Boolean {
         return getPreferences().contains(PIN_LOCK)
     }
+
+    /**
+     * Clears the saved pin. By calling this function, you can clear the saved pin so that user can create a new pin without remembering
+     * the saved pin.
+     */
+    fun clearPin() {
+        getPreferences().edit().remove(PIN_LOCK).apply()
+    }
 }
