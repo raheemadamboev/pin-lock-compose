@@ -24,7 +24,7 @@ allprojects {
 
 Include below dependency in build.gradle of application and sync it:
 ```groovy
-implementation 'com.github.raheemadamboev:pin-lock-compose:1.0'
+implementation 'com.github.raheemadamboev:pin-lock-compose:1.0.1'
 ```
 # Implementation
 
@@ -83,6 +83,18 @@ Use this only if there is already saved pin. If there is no saved pin, use simpl
 <p align="center">
   <img width="296" height="600" src="https://github.com/raheemadamboev/pin-lock-compose/blob/master/banner_3.gif" />
 </p>
+
+---
+
+To check if saved pin exists:
+```kotlin
+val pinExists = PinManager.pinExists()
+```
+
+To clear saved pin so user can create brand new pin:
+```kotlin
+PinManager.clearPin()
+```
 
 # Features
 
