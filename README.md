@@ -119,7 +119,11 @@ You can install and try demo app. All the features are implemented in the demo f
 
 # Projects using this library
 
-**Notepad** -> 40 000+ downloads in <a href="https://play.google.com/store/apps/details?id=xyz.teamgravity.notepad">Google Play Store</a>
+**Notepad**: 40 000+ downloads. 
+
+<a href="https://play.google.com/store/apps/details?id=xyz.teamgravity.notepad">Google Play Store</a>
+
+<a href="https://github.com/raheemadamboev/notepad-app">Github</a>
 
 # Licence
 
