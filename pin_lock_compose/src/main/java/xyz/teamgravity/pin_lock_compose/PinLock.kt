@@ -1,25 +1,41 @@
 package xyz.teamgravity.pin_lock_compose
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.animation.with
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.constraintlayout.compose.*
+import androidx.constraintlayout.compose.ChainStyle
+import androidx.constraintlayout.compose.ConstrainScope
+import androidx.constraintlayout.compose.ConstrainedLayoutReference
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.ConstraintLayoutScope
+import androidx.constraintlayout.compose.Dimension
+import xyz.teamgravity.pin_lock_compose.shake.ShakeController
+import xyz.teamgravity.pin_lock_compose.shake.rememberShakeController
+import xyz.teamgravity.pin_lock_compose.shake.shake
 
 /**
  * Covers the whole screen and displays the PinLock. This composable makes the user enter pin if it already exists. If there is
@@ -45,8 +61,7 @@ fun PinLock(
     onPinIncorrect: () -> Unit,
     onPinCreated: () -> Unit,
 ) {
-    var animate by remember { mutableStateOf(false) }
-
+    val controller = rememberShakeController()
     val numbers = rememberMutableStateListOf<Int>()
     val pinExists = remember { PinManager.pinExists() }
 
@@ -55,7 +70,7 @@ fun PinLock(
             title(pinExists)
         },
         color = color,
-        animate = animate,
+        controller = controller,
         numbers = numbers,
         onNumberChange = { number ->
             if (numbers.size < PinConst.PIN_LENGTH) numbers.add(number)
@@ -66,7 +81,7 @@ fun PinLock(
                         onPinCorrect()
                         numbers.clear()
                     } else {
-                        animate = !animate
+                        controller.incorrect()
                         onPinIncorrect()
                         numbers.clear()
                     }
@@ -107,17 +122,16 @@ fun ChangePinLock(
     onPinIncorrect: () -> Unit,
     onPinChanged: () -> Unit,
 ) {
-    var authenticated by rememberSaveable { mutableStateOf(false) }
-    var animate by remember { mutableStateOf(false) }
-
+    val controller = rememberShakeController()
     val numbers = rememberMutableStateListOf<Int>()
+    var authenticated by rememberSaveable { mutableStateOf(false) }
 
     BasePinLock(
         title = {
             title(authenticated)
         },
         color = color,
-        animate = animate,
+        controller = controller,
         numbers = numbers,
         onNumberChange = { number ->
             if (numbers.size < PinConst.PIN_LENGTH) numbers.add(number)
@@ -132,7 +146,7 @@ fun ChangePinLock(
                         numbers.clear()
                         authenticated = true
                     } else {
-                        animate = !animate
+                        controller.incorrect()
                         onPinIncorrect()
                         numbers.clear()
                     }
@@ -152,8 +166,8 @@ fun ChangePinLock(
  * Container for title text.
  * @param color
  * Background color of container.
- * @param animate
- * Whenever this value changes, incorrect pin pattern animation gets executed on pin indicator.
+ * @param controller
+ * ShakeController that allows to animate incorrect animation.
  * @param numbers
  * List of int that represents entered pin.
  * @param onNumberChange
@@ -165,7 +179,7 @@ fun ChangePinLock(
 private fun BasePinLock(
     title: @Composable () -> Unit,
     color: Color,
-    animate: Boolean,
+    controller: ShakeController,
     numbers: List<Int>,
     onNumberChange: (number: Int) -> Unit,
     onBackspace: () -> Unit,
@@ -180,9 +194,11 @@ private fun BasePinLock(
         val (oneB, twoB, threeB, fourB, fiveB, sixB, sevenB, eightB, nineB, zeroB, clearB) = createRefs()
 
         Box(
-            modifier = Modifier.constrainAs(titleC) {
-                linkTo(start = parent.start, end = parent.end)
-            },
+            modifier = Modifier
+                .shake(controller)
+                .constrainAs(titleC) {
+                    linkTo(start = parent.start, end = parent.end)
+                }
         ) {
             title()
         }
@@ -192,37 +208,27 @@ private fun BasePinLock(
                 width = Dimension.matchParent
             }
         )
-        AnimatedContent(
-            targetState = animate,
-            transitionSpec = {
-                slideInHorizontally(
-                    animationSpec = spring(
-                        dampingRatio = Spring.DampingRatioHighBouncy,
-                        stiffness = Spring.StiffnessHigh
-                    )
-                ) { 50 }.with(
-                    slideOutHorizontally(
-                        animationSpec = spring(
-                            dampingRatio = Spring.DampingRatioHighBouncy,
-                            stiffness = Spring.StiffnessHigh
-                        )
-                    ) { 0 }
-                )
-            },
-            modifier = Modifier.constrainAs(numberC) {
-                width = Dimension.matchParent
-            }
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .shake(controller)
+                .constrainAs(numberC) {
+                    width = Dimension.matchParent
+                }
         ) {
-            Row(
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                PinIndicator(filled = numbers.size > 0)
-                PinIndicator(filled = numbers.size > 1)
-                PinIndicator(filled = numbers.size > 2)
-                PinIndicator(filled = numbers.size > 3)
-            }
+            PinIndicator(
+                filled = numbers.size > 0
+            )
+            PinIndicator(
+                filled = numbers.size > 1
+            )
+            PinIndicator(
+                filled = numbers.size > 2
+            )
+            PinIndicator(
+                filled = numbers.size > 3
+            )
         }
         Spacer(
             modifier = Modifier.constrainAs(twoS) {
@@ -381,4 +387,4 @@ private fun ConstraintLayoutScope.NumberButton(
 /**
  * Background color of number button.
  */
-private val NumberButtonBackground = Color.White.copy(alpha = 0.3F)
+private val NumberButtonBackground: Color = Color.White.copy(alpha = 0.3F)
