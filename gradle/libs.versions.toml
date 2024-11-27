@@ -1,0 +1,36 @@
+[versions]
+
+compose = "2024.11.00"
+compose-constraintlayout = "1.1.0"
+compose-activity = "1.9.3"
+compose-lifecycle = "2.8.7"
+core = "1.15.0"
+security = "1.1.0-alpha06"
+
+android = "8.7.2"
+kotlin = "2.0.21"
+
+sdk-min = "21"
+sdk-compile = "35"
+sdk-target = "35"
+java-target = "17"
+
+[libraries]
+
+compose = { group = "androidx.compose", name = "compose-bom", version.ref = "compose" }
+compose-ui = { group = "androidx.compose.ui", name = "ui" }
+compose-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
+compose-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+compose-material3 = { group = "androidx.compose.material3", name = "material3" }
+compose-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout-compose", version.ref = "compose-constraintlayout" }
+compose-activity = { group = "androidx.activity", name = "activity-compose", version.ref = "compose-activity" }
+compose-lifecycle = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "compose-lifecycle" }
+core = { group = "androidx.core", name = "core-ktx", version.ref = "core" }
+security = { group = "androidx.security", name = "security-crypto", version.ref = "security" }
+
+[plugins]
+
+android = { id = "com.android.application", version.ref = "android" }
+library = { id = "com.android.library", version.ref = "android" }
+kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }

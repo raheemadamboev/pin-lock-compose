@@ -1,10 +1,14 @@
 package xyz.teamgravity.pinlockcomposedemo
 
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.*
+import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -24,13 +28,19 @@ import xyz.teamgravity.pinlockcomposedemo.ui.theme.PinLockComposeDemoTheme
 
 class MainActivity : ComponentActivity() {
 
-    companion object {
-        private const val TAG = "Tate"
+    private companion object {
+        const val TAG = "PinLock"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
-        window.navigationBarColor = android.graphics.Color.parseColor("#6650a4")
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            @Suppress("DEPRECATION")
+            window.navigationBarColor = android.graphics.Color.parseColor("#6650A4")
+        }
+
         setContent {
             PinLockComposeDemoTheme {
                 Surface(
@@ -92,25 +102,32 @@ class MainActivity : ComponentActivity() {
                         Screen.Main -> {
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.Center,
+                                verticalArrangement = Arrangement.spacedBy(
+                                    space = 16.dp,
+                                    alignment = Alignment.CenterVertically
+                                ),
                                 modifier = Modifier.fillMaxSize()
                             ) {
-                                Text(text = "You entered pin correctly!")
-                                Spacer(modifier = Modifier.height(16.dp))
+                                Text(
+                                    text = "You entered pin correctly!"
+                                )
                                 Button(
                                     onClick = {
                                         navigation = Screen.Authenticate
                                     }
                                 ) {
-                                    Text(text = "Authenticate")
+                                    Text(
+                                        text = "Authenticate"
+                                    )
                                 }
-                                Spacer(modifier = Modifier.height(16.dp))
                                 Button(
                                     onClick = {
                                         navigation = Screen.ChangePin
                                     }
                                 ) {
-                                    Text(text = "Change Pin")
+                                    Text(
+                                        text = "Change Pin"
+                                    )
                                 }
                             }
                         }
@@ -123,6 +140,6 @@ class MainActivity : ComponentActivity() {
     private enum class Screen {
         Authenticate,
         ChangePin,
-        Main
+        Main;
     }
 }
