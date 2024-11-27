@@ -8,24 +8,27 @@
 </p>
 
 <p align="center">
-🔐 Light library that is beautiful Pin Lock screen for Jetpack Compose. The library handles saving pin in Encrypted file. Integration is very easy and fast.
+🔐 <b>PinLock</b> is a light library to display Pin Lock screen in Jetpack Compose. The library handles saving pin in Encrypted file. Integration is very easy and fast.
 </p>
 
 # Setup
 
-Add it in your root **build.gradle** at the end of repositories:
-```groovy
-allprojects {
+Add the maven library bucket to the `dependencyResolutionManagement.repositories` block in `settings.gradle.kts` file as follows:
+```kotlin
+dependencyResolutionManagement {
+  ...
   repositories {
-    maven { url 'https://jitpack.io' }
+    ...
+    maven("https://jitpack.io")
   }
 }
-```  
-
-Include below dependency in build.gradle of application and sync it:
-```groovy
-implementation 'com.github.raheemadamboev:pin-lock-compose:1.0.1'
 ```
+
+Install the library to the project in desired module's `build.gradle.kts` file. Replace `<current_version>` with the actual version:
+```kotlin
+implementation("com.github.raheemadamboev:pin-lock-compose:<current_version>")
+```
+
 # Implementation
 
 Firstly, initialize the library on your `onCreate` of Application class:
@@ -57,8 +60,8 @@ PinLock(
 If there is no saved pin yet, it promtps the user to create pin. If there is saved pin, it promts the user to enter its pin:
 
 <p align="center">
-  <img width="296" height="600" src="https://github.com/raheemadamboev/pin-lock-compose/blob/master/banner_1.gif" />
-  <img width="296" height="600" src="https://github.com/raheemadamboev/pin-lock-compose/blob/master/banner_2.gif" />
+  <img width="296" height="600" src="https://github.com/raheemadamboev/pin-lock-compose/blob/master/extra/banner_1.gif" />
+  <img width="296" height="600" src="https://github.com/raheemadamboev/pin-lock-compose/blob/master/extra/banner_2.gif" />
 </p>
 
 ---
@@ -81,7 +84,7 @@ ChangePinLock(
 Use this only if there is already saved pin. If there is no saved pin, use simple `PinLock` instead for creating pin for the first time. When using `ChangePinLock`, firstly it prompts the user to enter original pin. After user succesfully authenticates using his original pin, it prompts the user to creat a new pin:
 
 <p align="center">
-  <img width="296" height="600" src="https://github.com/raheemadamboev/pin-lock-compose/blob/master/banner_3.gif" />
+  <img width="296" height="600" src="https://github.com/raheemadamboev/pin-lock-compose/blob/master/extra/banner_3.gif" />
 </p>
 
 ---
@@ -110,16 +113,16 @@ PinManager.clearPin()
 
 You can install and try demo app. All the features are implemented in the demo from creating pin to changing pin.
 
-<a href="https://github.com/raheemadamboev/pin-lock-compose/blob/master/app-debug.apk">Download demo</a>
+<a href="https://github.com/raheemadamboev/pin-lock-compose/blob/master/extra/app-debug.apk">Download demo</a>
 
 <p align="center">
-  <img width="296" height="600" src="https://github.com/raheemadamboev/pin-lock-compose/blob/master/screenshot_1.jpg" />
-  <img width="296" height="600" src="https://github.com/raheemadamboev/pin-lock-compose/blob/master/screenshot_2.jpg" />
+  <img width="296" height="600" src="https://github.com/raheemadamboev/pin-lock-compose/blob/master/extra/screenshot_1.jpg" />
+  <img width="296" height="600" src="https://github.com/raheemadamboev/pin-lock-compose/blob/master/extra/screenshot_2.jpg" />
 </p>
 
 # Projects using this library
 
-**Notepad**: 40 000+ downloads. 
+**Notepad**: 100 000+ downloads. 
 
 <a href="https://play.google.com/store/apps/details?id=xyz.teamgravity.notepad">Google Play Store</a>
 
