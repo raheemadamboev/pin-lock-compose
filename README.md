@@ -8,7 +8,7 @@
 </p>
 
 <p align="center">
-🔐 <b>PinLock</b> is a light library to display Pin Lock screen in Jetpack Compose. The library handles saving pin in Encrypted file. Integration is very easy and fast.
+🔐 <b>PinLock</b> is a light library to display Pin Lock screen in Jetpack Compose. The library handles saving pin in encrypted file. Integration is very easy and fast.
 </p>
 
 # Setup
