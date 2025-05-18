@@ -1,48 +1,24 @@
 package xyz.teamgravity.pin_lock_compose
 
 import android.content.Context
-import android.content.SharedPreferences
-import androidx.security.crypto.EncryptedSharedPreferences
-import androidx.security.crypto.MasterKey
+import kotlinx.coroutines.flow.first
+import xyz.teamgravity.coresdkandroid.crypto.CryptoManager
+import xyz.teamgravity.coresdkandroid.preferences.Preferences
+import xyz.teamgravity.pin_lock_compose.preferences.PinPreferences
+import xyz.teamgravity.pin_lock_compose.preferences.PreferencesMigration
 
 object PinManager {
 
-    private const val NAME = "xyz.teamgravity.pin_lock_compose"
-    private const val PIN_LOCK = "pin_lock"
+    private var preferences: Preferences? = null
 
-    private var preferences: SharedPreferences? = null
-
-    /**
-     * Returns EncryptedSharedPreferences.
-     *
-     * @param context
-     * Application context is preferred.
-     *
-     * @return EncryptedSharedPreferences.
-     */
-    private fun initializePreferences(context: Context): SharedPreferences {
-        val key = MasterKey.Builder(context)
-            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-            .build()
-
-        return EncryptedSharedPreferences.create(
-            context,
-            NAME,
-            key,
-            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+    private fun initializePreferences(context: Context): Preferences {
+        return Preferences(
+            crypto = CryptoManager(),
+            context = context
         )
     }
 
-    /**
-     * Returns non null SharedPreferences.
-     *
-     * @return non null SharedPreferences.
-     *
-     * @throws IllegalStateException
-     * If SharedPreferences is not initialized yet.
-     */
-    private fun getPreferences(): SharedPreferences {
+    private fun getPreferences(): Preferences {
         return preferences ?: throw IllegalStateException("Do you forget to call initialize() first?")
     }
 
@@ -67,13 +43,16 @@ object PinManager {
     ///////////////////////////////////////////////////////////////////////////
 
     /**
-     * Saves the pin in encrypted SharedPreferences.
+     * Saves the pin in encrypted Preferences.
      *
      * @param pin
      * List of pin numbers.
      */
-    internal fun savePin(pin: List<Int>) {
-        getPreferences().edit().putString(PIN_LOCK, fromIntList(pin)).apply()
+    internal suspend fun savePin(pin: List<Int>) {
+        getPreferences().upsertString(
+            key = PinPreferences.PinLock,
+            value = fromIntList(pin)
+        )
     }
 
     /**
@@ -84,9 +63,9 @@ object PinManager {
      * @param pin
      * List of pin numbers.
      */
-    internal fun checkPin(pin: List<Int>): Boolean {
+    internal suspend fun checkPin(pin: List<Int>): Boolean {
         if (!pinExists()) return false
-        val savedPin = getPreferences().getString(PIN_LOCK, null) ?: return false
+        val savedPin = getPreferences().getString(PinPreferences.PinLock, null).first() ?: return false
         return savedPin == fromIntList(pin)
     }
 
@@ -103,6 +82,10 @@ object PinManager {
     @Synchronized
     fun initialize(context: Context) {
         if (preferences == null) preferences = initializePreferences(context)
+        PreferencesMigration().migrate(
+            preferences = getPreferences(),
+            context = context
+        )
     }
 
     /**
@@ -110,15 +93,18 @@ object PinManager {
      *
      * @return true if there is already saved pin, false if there is no saved pin.
      */
-    fun pinExists(): Boolean {
-        return getPreferences().contains(PIN_LOCK)
+    suspend fun pinExists(): Boolean {
+        return getPreferences().getString(PinPreferences.PinLock).first() != null
     }
 
     /**
      * Clears the saved pin. By calling this function, you can clear the saved pin so that user can create a new pin without remembering
      * the saved pin.
      */
-    fun clearPin() {
-        getPreferences().edit().remove(PIN_LOCK).apply()
+    suspend fun clearPin() {
+        getPreferences().upsertString(
+            key = PinPreferences.PinLock,
+            value = null
+        )
     }
 }

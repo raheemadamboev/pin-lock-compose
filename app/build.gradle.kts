@@ -60,4 +60,7 @@ dependencies {
 
     // core
     implementation(libs.core)
+
+    // timber
+    implementation(libs.timber)
 }

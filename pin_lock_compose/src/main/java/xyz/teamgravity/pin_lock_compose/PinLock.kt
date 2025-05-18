@@ -26,6 +26,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -39,6 +40,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import xyz.teamgravity.pin_lock_compose.shake.ShakeController
 import xyz.teamgravity.pin_lock_compose.shake.rememberShakeController
 import xyz.teamgravity.pin_lock_compose.shake.shake
@@ -67,9 +70,10 @@ fun PinLock(
     onPinIncorrect: () -> Unit,
     onPinCreated: () -> Unit
 ) {
+    val scope = rememberCoroutineScope()
     val controller = rememberShakeController()
     val numbers = rememberMutableStateListOf<Int>()
-    val pinExists = remember { PinManager.pinExists() }
+    val pinExists = remember { runBlocking { PinManager.pinExists() } }
 
     BasePinLock(
         title = {
@@ -79,22 +83,24 @@ fun PinLock(
         controller = controller,
         numbers = numbers,
         onNumberChange = { number ->
-            if (numbers.size < PinConst.PIN_LENGTH) numbers.add(number)
+            scope.launch {
+                if (numbers.size < PinConst.PIN_LENGTH) numbers.add(number)
 
-            if (numbers.size == PinConst.PIN_LENGTH) {
-                if (PinManager.pinExists()) {
-                    if (PinManager.checkPin(numbers)) {
-                        onPinCorrect()
-                        numbers.clear()
+                if (numbers.size == PinConst.PIN_LENGTH) {
+                    if (PinManager.pinExists()) {
+                        if (PinManager.checkPin(numbers)) {
+                            onPinCorrect()
+                            numbers.clear()
+                        } else {
+                            controller.incorrect()
+                            onPinIncorrect()
+                            numbers.clear()
+                        }
                     } else {
-                        controller.incorrect()
-                        onPinIncorrect()
+                        PinManager.savePin(numbers)
+                        onPinCreated()
                         numbers.clear()
                     }
-                } else {
-                    PinManager.savePin(numbers)
-                    onPinCreated()
-                    numbers.clear()
                 }
             }
         },
@@ -128,6 +134,7 @@ fun ChangePinLock(
     onPinIncorrect: () -> Unit,
     onPinChanged: () -> Unit
 ) {
+    val scope = rememberCoroutineScope()
     val controller = rememberShakeController()
     val numbers = rememberMutableStateListOf<Int>()
     var authenticated by rememberSaveable { mutableStateOf(false) }
@@ -140,21 +147,23 @@ fun ChangePinLock(
         controller = controller,
         numbers = numbers,
         onNumberChange = { number ->
-            if (numbers.size < PinConst.PIN_LENGTH) numbers.add(number)
+            scope.launch {
+                if (numbers.size < PinConst.PIN_LENGTH) numbers.add(number)
 
-            if (numbers.size == PinConst.PIN_LENGTH) {
-                if (authenticated) {
-                    PinManager.savePin(numbers)
-                    onPinChanged()
-                    numbers.clear()
-                } else {
-                    if (PinManager.checkPin(numbers)) {
+                if (numbers.size == PinConst.PIN_LENGTH) {
+                    if (authenticated) {
+                        PinManager.savePin(numbers)
+                        onPinChanged()
                         numbers.clear()
-                        authenticated = true
                     } else {
-                        controller.incorrect()
-                        onPinIncorrect()
-                        numbers.clear()
+                        if (PinManager.checkPin(numbers)) {
+                            numbers.clear()
+                            authenticated = true
+                        } else {
+                            controller.incorrect()
+                            onPinIncorrect()
+                            numbers.clear()
+                        }
                     }
                 }
             }

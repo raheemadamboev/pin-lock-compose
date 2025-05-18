@@ -64,6 +64,12 @@ dependencies {
 
     // security
     implementation(libs.security)
+
+    // timber
+    implementation(libs.timber)
+
+    // gravity core
+    implementation(libs.gravity.core)
 }
 
 afterEvaluate {
@@ -74,7 +80,7 @@ afterEvaluate {
 
                 groupId = "com.github.raheemadamboev"
                 artifactId = "pin-lock-compose"
-                version = "1.0.2"
+                version = "1.0.3"
             }
         }
     }
