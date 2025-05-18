@@ -53,9 +53,6 @@ dependencies {
     implementation(libs.compose.preview)
     implementation(libs.compose.material3)
 
-    // compose constraint layout
-    implementation(libs.compose.constraintlayout)
-
     // compose activity
     implementation(libs.compose.activity)
 
@@ -67,6 +64,12 @@ dependencies {
 
     // security
     implementation(libs.security)
+
+    // timber
+    implementation(libs.timber)
+
+    // gravity core
+    implementation(libs.gravity.core)
 }
 
 afterEvaluate {
@@ -77,7 +80,7 @@ afterEvaluate {
 
                 groupId = "com.github.raheemadamboev"
                 artifactId = "pin-lock-compose"
-                version = "1.0.2"
+                version = "1.0.3"
             }
         }
     }

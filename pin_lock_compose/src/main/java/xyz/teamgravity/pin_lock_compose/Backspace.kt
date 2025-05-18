@@ -9,10 +9,10 @@ import androidx.compose.ui.graphics.vector.ImageVector
  */
 internal val Backspace: ImageVector
     get() {
-        if (_backspace != null) {
-            return _backspace!!
+        if (backspace != null) {
+            return backspace!!
         }
-        _backspace = materialIcon(name = "Filled.Backspace") {
+        backspace = materialIcon(name = "Filled.Backspace") {
             materialPath {
                 moveTo(22.0f, 3.0f)
                 lineTo(7.0f, 3.0f)
@@ -41,7 +41,7 @@ internal val Backspace: ImageVector
                 close()
             }
         }
-        return _backspace!!
+        return backspace!!
     }
 
-private var _backspace: ImageVector? = null
+private var backspace: ImageVector? = null
