@@ -53,9 +53,6 @@ dependencies {
     implementation(libs.compose.preview)
     implementation(libs.compose.material3)
 
-    // compose constraint layout
-    implementation(libs.compose.constraintlayout)
-
     // compose activity
     implementation(libs.compose.activity)
 
