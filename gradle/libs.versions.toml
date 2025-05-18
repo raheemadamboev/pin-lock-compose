@@ -1,18 +1,18 @@
 [versions]
 
-compose = "2024.11.00"
-compose-constraintlayout = "1.1.0"
-compose-activity = "1.9.3"
-compose-lifecycle = "2.8.7"
-core = "1.15.0"
-security = "1.1.0-alpha06"
+compose = "2025.05.00"
+compose-constraintlayout = "1.1.1"
+compose-activity = "1.10.1"
+compose-lifecycle = "2.9.0"
+core = "1.16.0"
+security = "1.1.0-alpha07"
 
-android = "8.7.2"
-kotlin = "2.0.21"
+android = "8.10.0"
+kotlin = "2.1.21"
 
 sdk-min = "21"
-sdk-compile = "35"
-sdk-target = "35"
+sdk-compile = "36"
+sdk-target = "36"
 java-target = "17"
 
 [libraries]
