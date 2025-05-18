@@ -1,5 +1,6 @@
 package xyz.teamgravity.pin_lock_compose
 
+import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -33,6 +34,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -63,7 +65,7 @@ fun PinLock(
     color: Color,
     onPinCorrect: () -> Unit,
     onPinIncorrect: () -> Unit,
-    onPinCreated: () -> Unit,
+    onPinCreated: () -> Unit
 ) {
     val controller = rememberShakeController()
     val numbers = rememberMutableStateListOf<Int>()
@@ -124,7 +126,7 @@ fun ChangePinLock(
     title: @Composable (authenticated: Boolean) -> Unit,
     color: Color,
     onPinIncorrect: () -> Unit,
-    onPinChanged: () -> Unit,
+    onPinChanged: () -> Unit
 ) {
     val controller = rememberShakeController()
     val numbers = rememberMutableStateListOf<Int>()
@@ -186,12 +188,77 @@ private fun BasePinLock(
     controller: ShakeController,
     numbers: List<Int>,
     onNumberChange: (number: Int) -> Unit,
-    onBackspace: () -> Unit,
+    onBackspace: () -> Unit
 ) {
-    val density = LocalDensity.current
-    var numbersRowWidthPx by remember { mutableIntStateOf(0) }
-    val numbersRowWidthDp by remember { derivedStateOf { with(density) { numbersRowWidthPx.toDp() } } }
+    val configuration = LocalConfiguration.current
+    when (configuration.orientation) {
+        Configuration.ORIENTATION_LANDSCAPE -> BasePinLockLandscape(
+            title = title,
+            color = color,
+            controller = controller,
+            numbers = numbers,
+            onNumberChange = onNumberChange,
+            onBackspace = onBackspace
+        )
 
+        else -> BasePinLockPortrait(
+            title = title,
+            color = color,
+            controller = controller,
+            numbers = numbers,
+            onNumberChange = onNumberChange,
+            onBackspace = onBackspace
+        )
+    }
+}
+
+@Composable
+private fun BasePinLockLandscape(
+    title: @Composable () -> Unit,
+    color: Color,
+    controller: ShakeController,
+    numbers: List<Int>,
+    onNumberChange: (number: Int) -> Unit,
+    onBackspace: () -> Unit
+) {
+    Row(
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color)
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            TitleContainer(
+                controller = controller,
+                title = title
+            )
+            Spacer(
+                modifier = Modifier.height(16.dp)
+            )
+            PinIndicatorContainer(
+                controller = controller,
+                filledCount = numbers.size
+            )
+        }
+        NumberContainer(
+            onNumberChange = onNumberChange,
+            onBackspace = onBackspace
+        )
+    }
+}
+
+@Composable
+private fun BasePinLockPortrait(
+    title: @Composable () -> Unit,
+    color: Color,
+    controller: ShakeController,
+    numbers: List<Int>,
+    onNumberChange: (number: Int) -> Unit,
+    onBackspace: () -> Unit
+) {
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -199,124 +266,59 @@ private fun BasePinLock(
             .fillMaxSize()
             .background(color)
     ) {
-        Box(
-            modifier = Modifier.shake(controller)
-        ) {
-            title()
-        }
+        TitleContainer(
+            controller = controller,
+            title = title
+        )
         Spacer(
             modifier = Modifier.height(16.dp)
         )
-        Row(
-            modifier = Modifier.shake(controller)
-        ) {
-            PinIndicator(
-                filled = numbers.size > 0
-            )
-            PinIndicator(
-                filled = numbers.size > 1
-            )
-            PinIndicator(
-                filled = numbers.size > 2
-            )
-            PinIndicator(
-                filled = numbers.size > 3
-            )
-        }
+        PinIndicatorContainer(
+            controller = controller,
+            filledCount = numbers.size
+        )
         Spacer(
             modifier = Modifier.height(16.dp)
         )
-        Column {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                NumberButton(
-                    number = 1,
-                    onClick = onNumberChange
-                )
-                NumberButton(
-                    number = 2,
-                    onClick = onNumberChange
-                )
-                NumberButton(
-                    number = 3,
-                    onClick = onNumberChange
-                )
-            }
-            Spacer(
-                modifier = Modifier.height(10.dp)
-            )
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                NumberButton(
-                    number = 4,
-                    onClick = onNumberChange
-                )
-                NumberButton(
-                    number = 5,
-                    onClick = onNumberChange
-                )
-                NumberButton(
-                    number = 6,
-                    onClick = onNumberChange
-                )
-            }
-            Spacer(
-                modifier = Modifier.height(10.dp)
-            )
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
-                modifier = Modifier.onGloballyPositioned { coordinate ->
-                    numbersRowWidthPx = coordinate.size.width
-                }
-            ) {
-                NumberButton(
-                    number = 7,
-                    onClick = onNumberChange
-                )
-                NumberButton(
-                    number = 8,
-                    onClick = onNumberChange
-                )
-                NumberButton(
-                    number = 9,
-                    onClick = onNumberChange
-                )
-            }
-            Spacer(
-                modifier = Modifier.height(10.dp)
-            )
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.width(numbersRowWidthDp)
-            ) {
-                NumberButton(
-                    number = 0,
-                    onClick = {},
-                    modifier = Modifier.alpha(0F)
-                )
-                NumberButton(
-                    number = 0,
-                    onClick = onNumberChange
-                )
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier.weight(1F)
-                ) {
-                    IconButton(
-                        onClick = onBackspace
-                    ) {
-                        Icon(
-                            imageVector = Backspace,
-                            tint = Color.White,
-                            contentDescription = stringResource(id = R.string.cd_backspace)
-                        )
-                    }
-                }
-            }
-        }
+        NumberContainer(
+            onNumberChange = onNumberChange,
+            onBackspace = onBackspace
+        )
+    }
+}
+
+@Composable
+private fun TitleContainer(
+    controller: ShakeController,
+    title: @Composable () -> Unit
+) {
+    Box(
+        modifier = Modifier.shake(controller)
+    ) {
+        title()
+    }
+}
+
+@Composable
+private fun PinIndicatorContainer(
+    controller: ShakeController,
+    filledCount: Int
+) {
+    Row(
+        modifier = Modifier.shake(controller)
+    ) {
+        PinIndicator(
+            filled = filledCount > 0
+        )
+        PinIndicator(
+            filled = filledCount > 1
+        )
+        PinIndicator(
+            filled = filledCount > 2
+        )
+        PinIndicator(
+            filled = filledCount > 3
+        )
     }
 }
 
@@ -328,7 +330,7 @@ private fun BasePinLock(
  */
 @Composable
 private fun PinIndicator(
-    filled: Boolean,
+    filled: Boolean
 ) {
     Box(
         modifier = Modifier
@@ -338,6 +340,108 @@ private fun PinIndicator(
             .background(if (filled) Color.White else Color.Transparent)
             .border(2.dp, Color.White, CircleShape)
     )
+}
+
+@Composable
+private fun NumberContainer(
+    onNumberChange: (number: Int) -> Unit,
+    onBackspace: () -> Unit
+) {
+    val density = LocalDensity.current
+    var numbersRowWidthPx by remember { mutableIntStateOf(0) }
+    val numbersRowWidthDp by remember { derivedStateOf { with(density) { numbersRowWidthPx.toDp() } } }
+
+    Column {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            NumberButton(
+                number = 1,
+                onClick = onNumberChange
+            )
+            NumberButton(
+                number = 2,
+                onClick = onNumberChange
+            )
+            NumberButton(
+                number = 3,
+                onClick = onNumberChange
+            )
+        }
+        Spacer(
+            modifier = Modifier.height(10.dp)
+        )
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            NumberButton(
+                number = 4,
+                onClick = onNumberChange
+            )
+            NumberButton(
+                number = 5,
+                onClick = onNumberChange
+            )
+            NumberButton(
+                number = 6,
+                onClick = onNumberChange
+            )
+        }
+        Spacer(
+            modifier = Modifier.height(10.dp)
+        )
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+            modifier = Modifier.onGloballyPositioned { coordinate ->
+                numbersRowWidthPx = coordinate.size.width
+            }
+        ) {
+            NumberButton(
+                number = 7,
+                onClick = onNumberChange
+            )
+            NumberButton(
+                number = 8,
+                onClick = onNumberChange
+            )
+            NumberButton(
+                number = 9,
+                onClick = onNumberChange
+            )
+        }
+        Spacer(
+            modifier = Modifier.height(10.dp)
+        )
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.width(numbersRowWidthDp)
+        ) {
+            NumberButton(
+                number = 0,
+                onClick = {},
+                modifier = Modifier.alpha(0F)
+            )
+            NumberButton(
+                number = 0,
+                onClick = onNumberChange
+            )
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.weight(1F)
+            ) {
+                IconButton(
+                    onClick = onBackspace
+                ) {
+                    Icon(
+                        imageVector = Backspace,
+                        tint = Color.White,
+                        contentDescription = stringResource(id = R.string.cd_backspace)
+                    )
+                }
+            }
+        }
+    }
 }
 
 /**
