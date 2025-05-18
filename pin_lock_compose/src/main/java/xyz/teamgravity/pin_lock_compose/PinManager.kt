@@ -2,7 +2,6 @@ package xyz.teamgravity.pin_lock_compose
 
 import android.content.Context
 import kotlinx.coroutines.flow.first
-import xyz.teamgravity.coresdkandroid.crypto.CryptoManager
 import xyz.teamgravity.coresdkandroid.preferences.Preferences
 import xyz.teamgravity.pin_lock_compose.preferences.PinPreferences
 import xyz.teamgravity.pin_lock_compose.preferences.PreferencesMigration
@@ -10,13 +9,6 @@ import xyz.teamgravity.pin_lock_compose.preferences.PreferencesMigration
 object PinManager {
 
     private var preferences: Preferences? = null
-
-    private fun initializePreferences(context: Context): Preferences {
-        return Preferences(
-            crypto = CryptoManager(),
-            context = context
-        )
-    }
 
     private fun getPreferences(): Preferences {
         return preferences ?: throw IllegalStateException("Do you forget to call initialize() first?")
@@ -80,11 +72,14 @@ object PinManager {
      * Need context to initialize.
      */
     @Synchronized
-    fun initialize(context: Context) {
-        if (preferences == null) preferences = initializePreferences(context)
+    fun initialize(
+        context: Context,
+        preferences: Preferences
+    ) {
+        this.preferences = preferences
         PreferencesMigration().migrate(
-            preferences = getPreferences(),
-            context = context
+            context = context,
+            preferences = getPreferences()
         )
     }
 

@@ -47,8 +47,8 @@ internal class PreferencesMigration {
     ///////////////////////////////////////////////////////////////////////////
 
     fun migrate(
-        preferences: Preferences,
-        context: Context
+        context: Context,
+        preferences: Preferences
     ) {
         CoroutineScope(Dispatchers.IO).launch {
             val migrated = preferences.getBoolean(PinPreferences.Migrated).first() as Boolean
