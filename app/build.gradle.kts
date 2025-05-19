@@ -63,4 +63,7 @@ dependencies {
 
     // timber
     implementation(libs.timber)
+
+    // gravity core
+    implementation(libs.gravity.core)
 }
