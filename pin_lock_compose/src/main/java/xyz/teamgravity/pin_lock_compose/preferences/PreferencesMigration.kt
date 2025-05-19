@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package xyz.teamgravity.pin_lock_compose.preferences
 
 import android.content.Context
@@ -27,7 +29,6 @@ internal class PreferencesMigration {
      *
      * @return EncryptedSharedPreferences.
      */
-    @Suppress("DEPRECATION")
     private fun initializePreferences(context: Context): SharedPreferences {
         val key = MasterKey.Builder(context)
             .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
