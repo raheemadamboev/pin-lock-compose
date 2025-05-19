@@ -69,18 +69,18 @@ dependencies {
     implementation(libs.timber)
 
     // gravity core
-    implementation(libs.gravity.core)
+    api(libs.gravity.core)
 }
 
-afterEvaluate {
-    publishing {
-        publications {
-            register<MavenPublication>("release") {
-                from(components["release"])
+publishing {
+    publications {
+        register<MavenPublication>("release") {
+            groupId = "com.github.raheemadamboev"
+            artifactId = "pin-lock-compose"
+            version = "1.0.3"
 
-                groupId = "com.github.raheemadamboev"
-                artifactId = "pin-lock-compose"
-                version = "1.0.3"
+            afterEvaluate {
+                from(components["release"])
             }
         }
     }
