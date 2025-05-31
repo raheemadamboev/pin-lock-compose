@@ -29,18 +29,23 @@ internal class PreferencesMigration {
      *
      * @return EncryptedSharedPreferences.
      */
-    private fun initializePreferences(context: Context): SharedPreferences {
+    private fun initializePreferences(context: Context): SharedPreferences? {
         val key = MasterKey.Builder(context)
             .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
             .build()
 
-        return EncryptedSharedPreferences.create(
-            context,
-            NAME,
-            key,
-            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-        )
+        try {
+            return EncryptedSharedPreferences.create(
+                context,
+                NAME,
+                key,
+                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+            )
+        } catch (e: Exception) {
+            Timber.e(e)
+            return null
+        }
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -60,12 +65,7 @@ internal class PreferencesMigration {
             }
 
             val deprecated = initializePreferences(context)
-            val pinLock = deprecated.getString(PIN_LOCK, null)
-
-            preferences.upsertBoolean(
-                key = PinPreferences.Migrated,
-                value = true
-            )
+            val pinLock = deprecated?.getString(PIN_LOCK, null)
 
             if (pinLock != null) {
                 preferences.upsertString(
@@ -74,6 +74,11 @@ internal class PreferencesMigration {
                 )
                 deprecated.edit(commit = true) { remove(PIN_LOCK) }
             }
+
+            preferences.upsertBoolean(
+                key = PinPreferences.Migrated,
+                value = true
+            )
         }
     }
 }
