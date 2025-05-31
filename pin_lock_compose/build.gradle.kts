@@ -77,7 +77,7 @@ publishing {
         register<MavenPublication>("release") {
             groupId = "com.github.raheemadamboev"
             artifactId = "pin-lock-compose"
-            version = "1.0.3"
+            version = "1.0.5"
 
             afterEvaluate {
                 from(components["release"])
