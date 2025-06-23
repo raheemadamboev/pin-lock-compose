@@ -86,9 +86,10 @@ fun PinLock(
             scope.launch {
                 if (numbers.size < PinConst.PIN_LENGTH) numbers.add(number)
 
-                if (numbers.size == PinConst.PIN_LENGTH) {
+                val immutableNumbers = numbers.toList()
+                if (immutableNumbers.size == PinConst.PIN_LENGTH) {
                     if (PinManager.pinExists()) {
-                        if (PinManager.checkPin(numbers)) {
+                        if (PinManager.checkPin(immutableNumbers)) {
                             onPinCorrect()
                             numbers.clear()
                         } else {
@@ -97,7 +98,7 @@ fun PinLock(
                             numbers.clear()
                         }
                     } else {
-                        PinManager.savePin(numbers)
+                        PinManager.savePin(immutableNumbers)
                         onPinCreated()
                         numbers.clear()
                     }
@@ -150,13 +151,14 @@ fun ChangePinLock(
             scope.launch {
                 if (numbers.size < PinConst.PIN_LENGTH) numbers.add(number)
 
-                if (numbers.size == PinConst.PIN_LENGTH) {
+                val immutableNumbers = numbers.toList()
+                if (immutableNumbers.size == PinConst.PIN_LENGTH) {
                     if (authenticated) {
-                        PinManager.savePin(numbers)
+                        PinManager.savePin(immutableNumbers)
                         onPinChanged()
                         numbers.clear()
                     } else {
-                        if (PinManager.checkPin(numbers)) {
+                        if (PinManager.checkPin(immutableNumbers)) {
                             numbers.clear()
                             authenticated = true
                         } else {
