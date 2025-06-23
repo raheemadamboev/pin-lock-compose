@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.library)
     alias(libs.plugins.kotlin)
     alias(libs.plugins.compose)
-    `maven-publish`
+    id("maven-publish")
 }
 
 android {
@@ -62,9 +62,6 @@ dependencies {
     // core
     implementation(libs.core)
 
-    // security
-    implementation(libs.security)
-
     // timber
     implementation(libs.timber)
 
@@ -77,7 +74,7 @@ publishing {
         register<MavenPublication>("release") {
             groupId = "com.github.raheemadamboev"
             artifactId = "pin-lock-compose"
-            version = "1.0.5"
+            version = "1.0.6"
 
             afterEvaluate {
                 from(components["release"])
