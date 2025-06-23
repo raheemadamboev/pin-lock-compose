@@ -2,7 +2,6 @@ package xyz.teamgravity.pinlockcomposedemo
 
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -22,6 +21,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.graphics.toColorInt
+import timber.log.Timber
 import xyz.teamgravity.pin_lock_compose.ChangePinLock
 import xyz.teamgravity.pin_lock_compose.PinLock
 import xyz.teamgravity.pinlockcomposedemo.ui.theme.PinLockComposeDemoTheme
@@ -38,7 +39,7 @@ class MainActivity : ComponentActivity() {
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
             @Suppress("DEPRECATION")
-            window.navigationBarColor = android.graphics.Color.parseColor("#6650A4")
+            window.navigationBarColor = "#6650A4".toColorInt()
         }
 
         setContent {
@@ -62,16 +63,16 @@ class MainActivity : ComponentActivity() {
                                 color = MaterialTheme.colorScheme.primary,
                                 onPinCorrect = {
                                     // pin is correct, navigate or hide pin lock
-                                    Log.d(TAG, "Pin is correct")
+                                    Timber.tag(TAG).d("Pin is correct")
                                     navigation = Screen.Main
                                 },
                                 onPinIncorrect = {
                                     // pin is incorrect, show error
-                                    Log.d(TAG, "Pin is incorrect")
+                                    Timber.tag(TAG).d("Pin is incorrect")
                                 },
                                 onPinCreated = {
                                     // pin created for the first time, navigate or hide pin lock
-                                    Log.d(TAG, "Pin is created for the first time")
+                                    Timber.tag(TAG).d("Pin is created for the first time")
                                     navigation = Screen.Main
                                 }
                             )
@@ -89,11 +90,11 @@ class MainActivity : ComponentActivity() {
                                 color = MaterialTheme.colorScheme.primary,
                                 onPinIncorrect = {
                                     // pin is incorrect, show error
-                                    Log.d(TAG, "Pin is incorrect")
+                                    Timber.tag(TAG).d("Pin is incorrect")
                                 },
                                 onPinChanged = {
                                     // pin changed, navigate or hide pin lock
-                                    Log.d(TAG, "Pin is changed")
+                                    Timber.tag(TAG).d("Pin is changed")
                                     navigation = Screen.Main
                                 }
                             )

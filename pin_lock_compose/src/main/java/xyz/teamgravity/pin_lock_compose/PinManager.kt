@@ -1,10 +1,8 @@
 package xyz.teamgravity.pin_lock_compose
 
-import android.content.Context
 import kotlinx.coroutines.flow.first
 import xyz.teamgravity.coresdkandroid.preferences.Preferences
 import xyz.teamgravity.pin_lock_compose.preferences.PinPreferences
-import xyz.teamgravity.pin_lock_compose.preferences.PreferencesMigration
 
 object PinManager {
 
@@ -67,20 +65,10 @@ object PinManager {
 
     /**
      * Initializes the pin lock. Prefer calling this function inside Application class.
-     *
-     * @param context
-     * Need context to initialize.
      */
     @Synchronized
-    fun initialize(
-        context: Context,
-        preferences: Preferences
-    ) {
+    fun initialize(preferences: Preferences) {
         this.preferences = preferences
-        PreferencesMigration().migrate(
-            context = context,
-            preferences = getPreferences()
-        )
     }
 
     /**

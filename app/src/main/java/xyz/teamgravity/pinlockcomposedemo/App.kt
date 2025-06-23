@@ -15,7 +15,6 @@ class App : Application() {
 
         // initialize pin manager in application
         PinManager.initialize(
-            context = this,
             preferences = Preferences(
                 crypto = CryptoManager(),
                 context = this
