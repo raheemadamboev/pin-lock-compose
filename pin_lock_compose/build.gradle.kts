@@ -17,6 +17,11 @@ android {
 
     lint {
         targetSdk = libs.versions.sdk.target.get().toInt()
+        disable.addAll(
+            listOf(
+                "NotificationPermission"
+            )
+        )
     }
 
     compileOptions {
