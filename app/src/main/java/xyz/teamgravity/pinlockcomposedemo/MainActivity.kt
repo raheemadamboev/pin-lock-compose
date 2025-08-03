@@ -5,12 +5,17 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,8 +39,8 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
             @Suppress("DEPRECATION")
@@ -44,60 +49,71 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             PinLockComposeDemoTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
+                Scaffold(
+                    contentWindowInsets = WindowInsets.safeDrawing
+                ) { padding ->
                     var navigation by rememberSaveable { mutableStateOf(Screen.Authenticate) }
 
                     when (navigation) {
                         Screen.Authenticate -> {
-                            PinLock(
-                                title = { pinExists ->
-                                    Text(
-                                        text = if (pinExists) "Enter your pin" else "Create pin",
-                                        color = Color.White,
-                                        fontSize = 22.sp
-                                    )
-                                },
-                                color = MaterialTheme.colorScheme.primary,
-                                onPinCorrect = {
-                                    // pin is correct, navigate or hide pin lock
-                                    Timber.tag(TAG).d("Pin is correct")
-                                    navigation = Screen.Main
-                                },
-                                onPinIncorrect = {
-                                    // pin is incorrect, show error
-                                    Timber.tag(TAG).d("Pin is incorrect")
-                                },
-                                onPinCreated = {
-                                    // pin created for the first time, navigate or hide pin lock
-                                    Timber.tag(TAG).d("Pin is created for the first time")
-                                    navigation = Screen.Main
-                                }
-                            )
+                            Box(
+                                modifier = Modifier
+                                    .background(MaterialTheme.colorScheme.primary)
+                                    .padding(padding)
+                            ) {
+                                PinLock(
+                                    title = { pinExists ->
+                                        Text(
+                                            text = if (pinExists) "Enter your pin" else "Create pin",
+                                            color = Color.White,
+                                            fontSize = 22.sp
+                                        )
+                                    },
+                                    color = MaterialTheme.colorScheme.primary,
+                                    onPinCorrect = {
+                                        // pin is correct, navigate or hide pin lock
+                                        Timber.tag(TAG).d("Pin is correct")
+                                        navigation = Screen.Main
+                                    },
+                                    onPinIncorrect = {
+                                        // pin is incorrect, show error
+                                        Timber.tag(TAG).d("Pin is incorrect")
+                                    },
+                                    onPinCreated = {
+                                        // pin created for the first time, navigate or hide pin lock
+                                        Timber.tag(TAG).d("Pin is created for the first time")
+                                        navigation = Screen.Main
+                                    }
+                                )
+                            }
                         }
 
                         Screen.ChangePin -> {
-                            ChangePinLock(
-                                title = { authenticated ->
-                                    Text(
-                                        text = if (authenticated) "Enter new pin" else "Enter your pin",
-                                        color = Color.White,
-                                        fontSize = 22.sp
-                                    )
-                                },
-                                color = MaterialTheme.colorScheme.primary,
-                                onPinIncorrect = {
-                                    // pin is incorrect, show error
-                                    Timber.tag(TAG).d("Pin is incorrect")
-                                },
-                                onPinChanged = {
-                                    // pin changed, navigate or hide pin lock
-                                    Timber.tag(TAG).d("Pin is changed")
-                                    navigation = Screen.Main
-                                }
-                            )
+                            Box(
+                                modifier = Modifier
+                                    .background(MaterialTheme.colorScheme.primary)
+                                    .padding(padding)
+                            ) {
+                                ChangePinLock(
+                                    title = { authenticated ->
+                                        Text(
+                                            text = if (authenticated) "Enter new pin" else "Enter your pin",
+                                            color = Color.White,
+                                            fontSize = 22.sp
+                                        )
+                                    },
+                                    color = MaterialTheme.colorScheme.primary,
+                                    onPinIncorrect = {
+                                        // pin is incorrect, show error
+                                        Timber.tag(TAG).d("Pin is incorrect")
+                                    },
+                                    onPinChanged = {
+                                        // pin changed, navigate or hide pin lock
+                                        Timber.tag(TAG).d("Pin is changed")
+                                        navigation = Screen.Main
+                                    }
+                                )
+                            }
                         }
 
                         Screen.Main -> {
@@ -107,7 +123,9 @@ class MainActivity : ComponentActivity() {
                                     space = 16.dp,
                                     alignment = Alignment.CenterVertically
                                 ),
-                                modifier = Modifier.fillMaxSize()
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(padding)
                             ) {
                                 Text(
                                     text = "You entered pin correctly!"
