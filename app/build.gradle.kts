@@ -50,7 +50,7 @@ dependencies {
 
     // pin lock compose
     implementation(projects.pinLockCompose)
-    //    implementation("com.github.raheemadamboev:pin-lock-compose:1.0.7")
+//    implementation("com.github.raheemadamboev:pin-lock-compose:1.0.7")
 
     // compose
     implementation(platform(libs.compose))
